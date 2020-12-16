@@ -1,0 +1,18 @@
+html, body {
+  margin: 10;
+  padding: 10;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 440px;
+  height: 440px;
+  border: black solid;
+}
+
+.grid div {
+  width: 15px;
+  height: 15px;
+  background-color: dodgerblue;
+}
