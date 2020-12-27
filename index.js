@@ -211,8 +211,6 @@ function checkDot(to) {
   if (squares[to].classList.contains('pac-dot') ) {
     squares[to].classList.remove('pac-dot');
     addScore(1);
-    // myScore += 1;
-    // scoreDisplay.innerHTML = myScore;
   }
 }
 
@@ -224,8 +222,6 @@ function checkPowerPellet(to) {
 
     // add 10 to score
     addScore(10);
-    // myScore += 10;
-    // scoreDisplay.innerHTML = myScore;
 
     // set ghosts to scared
     scaredGhosts(true);
