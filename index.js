@@ -75,19 +75,32 @@ function createBoard() {
     squares[g.currentIndex].classList.add('ghost');
 
     g.timerId = setInterval(() => {
-      if (!checkGhostMove(g.currentIndex, g.direction)) {
-        let ghostDirections = getGhostDirections(g);
-        g.direction  = ghostDirections[Math.floor(Math.random() * ghostDirections.length)];
+      // get all the available moves
+      let ghostDirections = getGhostDirections(g);
+
+      // check if available direction is not empty
+      if (ghostDirections.length > 0) {
+        // pick one of the available directions
+        let d  = ghostDirections[Math.floor(Math.random() * ghostDirections.length)];
+        to = g.currentIndex + d;
+
+        //remove ghost from current index
+        squares[g.currentIndex].classList.remove(g.name);
+        squares[g.currentIndex].classList.remove('ghost');
+
+        //update ghost current and previous index
+        g.prevIndex = g.currentIndex;
+        g.currentIndex += d;
+
+        //add ghost to new index
+        squares[g.currentIndex].classList.add(g.name);
+        squares[g.currentIndex].classList.add('ghost');
+      } else {
+        //stay at the same place and update previous index
+        g.prevIndex = g.currentIndex;
       }
-      to = g.currentIndex + g.direction;
-      //remove ghost from current index
-      squares[g.currentIndex].classList.remove(g.name);
-      squares[g.currentIndex].classList.remove('ghost');
-      //update ghost current index
-      g.currentIndex += g.direction;
-      //add ghost to new index
-      squares[g.currentIndex].classList.add(g.name);
-      squares[g.currentIndex].classList.add('ghost');
+
+
     }, g.speed);
   })
   // console.log(squares);
@@ -110,8 +123,9 @@ function checkGhostMove(c, d) {
 function getGhostDirections(g) {
   let ghostDirections = [];
   directions.forEach( d => {
-    if (checkGhostMove(g.currentIndex, d)) {
-      ghostDirections.push(d)
+    if (g.currentIndex + d !== g.prevIndex &&
+      checkGhostMove(g.currentIndex, d)) {
+        ghostDirections.push(d)
     }
   })
   return ghostDirections
@@ -177,10 +191,11 @@ class Ghost {
     this.name = name;
     this.startIndex = startIndex;
     this.speed = speed;
-    this.currentIndex = startIndex
+    this.currentIndex = startIndex;
+    this.prevIndex = startIndex;
     this.isScared = false;
     this.timerId = NaN;
-    this.direction = directions[Math.floor(Math.random() * directions.length)]
+    // this.direction = directions[Math.floor(Math.random() * directions.length)]
   }
 }
 
