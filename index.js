@@ -4,7 +4,7 @@ const scoreDisplay = document.querySelector('#score');
 const squares = [];
 
 //28 * 28 = 784
-  // 0 - pac-dots
+  // 0 - pac-dot
   // 1 - wall
   // 2 - ghost-lair
   // 3 - power-pellet
@@ -38,17 +38,31 @@ const layout = [
   1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,
   1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,
   1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 
-] 
+  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+]
 
 // create board
 function createBoard() {
   for (i = 0; i < layout.length; i++) {
     const square = document.createElement('div');
+    switch(layout[i]) {
+      case 0:
+        square.classList.add('pac-dot');
+        break;
+      case 1:
+        square.classList.add('wall');
+        break;
+      case 2:
+        square.classList.add('ghost-lair');
+        break;
+      case 3:
+        square.classList.add('power-pellet');
+        break;
+    }
     grid.appendChild(square);
     squares.push(square);
   }
-  console.log(squares);
+  // console.log(squares);
 }
 
 createBoard();

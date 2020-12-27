@@ -14,7 +14,7 @@ html, body {
 .grid div {
   width: 15px;
   height: 15px;
-  background-color: dodgerblue;
+  /* background-color: dodgerblue; */
 }
 
 /* //28 * 28 = 784
