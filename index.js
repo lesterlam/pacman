@@ -73,37 +73,77 @@ function createBoard() {
   ghosts.forEach(g => {
     squares[g.currentIndex].classList.add(g.name);
     squares[g.currentIndex].classList.add('ghost');
-
-    g.timerId = setInterval(() => {
-      // get all the available moves
-      let ghostDirections = getGhostDirections(g);
-
-      // check if available direction is not empty
-      if (ghostDirections.length > 0) {
-        // pick one of the available directions
-        let d  = ghostDirections[Math.floor(Math.random() * ghostDirections.length)];
-        to = g.currentIndex + d;
-
-        //remove ghost from current index
-        squares[g.currentIndex].classList.remove(g.name);
-        squares[g.currentIndex].classList.remove('ghost');
-
-        //update ghost current and previous index
-        g.prevIndex = g.currentIndex;
-        g.currentIndex += d;
-
-        //add ghost to new index
-        squares[g.currentIndex].classList.add(g.name);
-        squares[g.currentIndex].classList.add('ghost');
-      } else {
-        //stay at the same place and update previous index
-        g.prevIndex = g.currentIndex;
-      }
-
-
-    }, g.speed);
+    moveGhost(g);
   })
   // console.log(squares);
+}
+
+// move ghost
+function moveGhost(g) {
+  g.timerId = setInterval(() => {
+    // get all the available moves
+    let ghostDirections = getGhostDirections(g);
+
+    // check if available direction is not empty
+    if (ghostDirections.length > 0) {
+      // pick one of the available directions
+      let d  = ghostDirections[Math.floor(Math.random() * ghostDirections.length)];
+      to = g.currentIndex + d;
+
+      //remove ghost from current index
+      squares[g.currentIndex].classList.remove(g.name);
+      squares[g.currentIndex].classList.remove('ghost', 'scared-ghost');
+
+      //update ghost current and previous index
+      g.prevIndex = g.currentIndex;
+      g.currentIndex += d;
+
+      //add ghost to new index
+      squares[g.currentIndex].classList.add(g.name);
+      squares[g.currentIndex].classList.add('ghost');
+      if (g.isScared) {
+        squares[g.currentIndex].classList.add('scared-ghost');
+      }
+    } else {
+      //stay at the same place and update previous index
+      g.prevIndex = g.currentIndex;
+    }
+
+    // check if pacman collided with ghost
+    checkPacmanHitGhost();
+
+  }, g.speed);
+}
+
+// check if pacman collied with ghost
+function checkPacmanHitGhost() {
+  if (squares[locPacman].classList.contains('ghost')) {
+    ghosts.forEach( g => {
+      if (g.currentIndex === locPacman) {
+        if (g.isScared) {
+          addScore(50);
+          resetGhost(g);
+        } else {
+          stopGame();
+        }
+      }
+    })
+  }
+}
+
+// reset ghost back to ghost-layer
+function resetGhost(g) {
+  squares[g.currentIndex].classList.remove(g.name, 'ghost', 'scared-ghost');
+  g.currentIndex = g.startIndex;
+  g.prevIndex = g.startIndex;
+  g.isScared = false;
+  squares[g.currentIndex].classList.add(g.name, 'ghost');
+}
+
+// stop game
+function stopGame() {
+  document.removeEventListener('keyup', movePacman);
+  ghosts.forEach( g => { clearInterval(g.timerId); })
 }
 
 // check whether it is valid ghost move
@@ -131,7 +171,7 @@ function getGhostDirections(g) {
   return ghostDirections
 }
 
-// get next position
+// get next pacman position
 function getNextPosition(e) {
   let to;
   let from = locPacman;
@@ -166,23 +206,63 @@ function getNextPosition(e) {
   return to;
 }
 
+// check pacman for dot
+function checkDot(to) {
+  if (squares[to].classList.contains('pac-dot') ) {
+    squares[to].classList.remove('pac-dot');
+    addScore(1);
+    // myScore += 1;
+    // scoreDisplay.innerHTML = myScore;
+  }
+}
+
+// check pacman for power-pellet
+function checkPowerPellet(to) {
+  if (squares[to].classList.contains('power-pellet')) {
+    // remove power pellet
+    squares[to].classList.remove('power-pellet');
+
+    // add 10 to score
+    addScore(10);
+    // myScore += 10;
+    // scoreDisplay.innerHTML = myScore;
+
+    // set ghosts to scared
+    scaredGhosts(true);
+
+    // unscare the ghosts after 10 secs
+    setTimeout(function() { scaredGhosts(false); }, 10000);
+
+  }
+}
+
+// set whether the ghosts are scared
+function scaredGhosts(isScared) {
+  ghosts.forEach( g => {
+    g.isScared = isScared;
+    if (isScared) { squares[g.currentIndex].classList.add('scared-ghost'); }
+    else {squares[g.currentIndex].classList.remove('scared-ghost'); }
+  });
+}
+
 // move to position
 function movePacmanTo(to) {
   squares[locPacman].classList.remove('pacman');
   squares[to].classList.add('pacman');
   locPacman = to;
-  if (squares[to].classList.contains('pac-dot') ||
-      squares[to].classList.contains('power-pellet')) {
-    squares[to].classList.remove('pac-dot');
-    squares[to].classList.remove('power-pellet');
-    myScore += 1;
-    scoreDisplay.innerHTML = myScore;
-  }
+  checkDot(to);
+  checkPowerPellet(to);
 }
 
 // control pacman
 function movePacman(e) {
   movePacmanTo(getNextPosition(e));
+}
+
+// add score
+function addScore(s) {
+  myScore += s;
+  scoreDisplay.innerHTML = myScore;
 }
 
 // ghost class
