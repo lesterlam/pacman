@@ -42,4 +42,25 @@ html, body {
 .pacman {
   background-color: orange;
   border-radius: 7.5px;
+  border: none;
+}
+
+.blinky {
+  background-color: aqua;
+  border: none;
+}
+
+.pinky {
+  background-color: pink;
+  border: none;
+}
+
+.inky {
+  background-color: red;
+  border: none;
+}
+
+.clyde {
+  background-color: brown;
+  border: none;
 }
